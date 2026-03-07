@@ -4,39 +4,7 @@
 
 namespace FunStuff {
 
-class HardwareBreakpointHook {
-private:
-    static void* TargetAddress;
-    static void* HookFunction;
-    static void* OriginalFunction;
-    static PVOID VehHandle;
-    static BOOL IsActive;
-    static DWORD DrIndex;
-
-public:
-    static BOOL Install( void* Target , void* Hook , void** OutOriginal );
-    static BOOL Remove( );
-    static LONG CALLBACK ExceptionHandler( PEXCEPTION_POINTERS ExceptionInfo );
-    
-    template<typename Ret , typename... Args>
-    static Ret CallOriginal( Args... args ) {
-        typedef Ret( *FuncType )( Args... );
-        return ( (FuncType)OriginalFunction )( args... );
-    }
-};
-
-
-void* HardwareBreakpointHook::TargetAddress = nullptr;
-void* HardwareBreakpointHook::HookFunction = nullptr;
-void* HardwareBreakpointHook::OriginalFunction = nullptr;
-PVOID HardwareBreakpointHook::VehHandle = nullptr;
-BOOL HardwareBreakpointHook::IsActive = FALSE;
-DWORD HardwareBreakpointHook::DrIndex = 0;
-
-}
-
-
-DWORD FunStuff::FindFreeDrIndex( PCONTEXT Ctx ) {
+DWORD FindFreeDrIndex( PCONTEXT Ctx ) {
     for ( DWORD i = 0; i < 4; i++ ) {
         if ( !( Ctx->Dr7 & ( 1ULL << ( i * 2 ) ) ) )
             return i;
@@ -45,7 +13,7 @@ DWORD FunStuff::FindFreeDrIndex( PCONTEXT Ctx ) {
 }
 
 
-BOOL FunStuff::SetHardwareBreakpoint( void* Address , DWORD DrIndex ) {
+BOOL SetHardwareBreakpoint( void* Address , DWORD DrIndex ) {
     HANDLE Thread = GetCurrentThread( );
     CONTEXT Ctx = { 0 };
     Ctx.ContextFlags = CONTEXT_DEBUG_REGISTERS;
@@ -69,7 +37,7 @@ BOOL FunStuff::SetHardwareBreakpoint( void* Address , DWORD DrIndex ) {
 }
 
 
-BOOL FunStuff::RemoveHardwareBreakpoint( DWORD DrIndex ) {
+BOOL RemoveHardwareBreakpoint( DWORD DrIndex ) {
     HANDLE Thread = GetCurrentThread( );
     CONTEXT Ctx = { 0 };
     Ctx.ContextFlags = CONTEXT_DEBUG_REGISTERS;
@@ -88,6 +56,44 @@ BOOL FunStuff::RemoveHardwareBreakpoint( DWORD DrIndex ) {
     }
 
     return SetThreadContext( Thread , &Ctx );
+}
+
+
+class HardwareBreakpointHook {
+private:
+    static void* TargetAddress;
+    static void* HookFunction;
+    static void* OriginalFunction;
+    static PVOID VehHandle;
+    static BOOL IsActive;
+    static DWORD DrIndex;
+
+public:
+    static BOOL Install( void* Target , void* Hook , void** OutOriginal );
+    static BOOL Remove( );
+    static LONG CALLBACK ExceptionHandler( PEXCEPTION_POINTERS ExceptionInfo );
+    
+    template<typename Ret , typename... Args>
+    static Ret CallOriginal( Args... args ) {
+        RemoveHardwareBreakpoint( DrIndex );
+        
+        typedef Ret( *FuncType )( Args... );
+        Ret Result = ( (FuncType)OriginalFunction )( args... );
+        
+        SetHardwareBreakpoint( TargetAddress , DrIndex );
+        
+        return Result;
+    }
+};
+
+
+void* HardwareBreakpointHook::TargetAddress = nullptr;
+void* HardwareBreakpointHook::HookFunction = nullptr;
+void* HardwareBreakpointHook::OriginalFunction = nullptr;
+PVOID HardwareBreakpointHook::VehHandle = nullptr;
+BOOL HardwareBreakpointHook::IsActive = FALSE;
+DWORD HardwareBreakpointHook::DrIndex = 0;
+
 }
 
 
