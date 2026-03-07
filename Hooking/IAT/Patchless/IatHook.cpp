@@ -27,7 +27,7 @@ namespace FunStuff {
     BOOL IsExecuting;
   };
 
-  class EatHook {
+  class IatHook {
     private: static VehHookState State;
     static PVOID VehHandle;
 
@@ -50,8 +50,8 @@ namespace FunStuff {
 
 }
 
-FunStuff::VehHookState FunStuff::EatHook::State {};
-PVOID FunStuff::EatHook::VehHandle = nullptr;
+FunStuff::VehHookState FunStuff::IatHook::State {};
+PVOID FunStuff::IatHook::VehHandle = nullptr;
 
 FunStuff::PeImage FunStuff::ParsePeImage(LPCSTR ImageName) {
   PVOID ImageBase = GetModuleHandleA(ImageName);
@@ -111,7 +111,7 @@ void FunStuff::SetInstructionPointer(PCONTEXT Ctx, DWORD_PTR Address) {
   #endif
 }
 
-DWORD FunStuff::EatHook::FindFreeDrIndex(PCONTEXT Ctx) {
+DWORD FunStuff::IatHook::FindFreeDrIndex(PCONTEXT Ctx) {
   for (DWORD i = 0; i < 4; i++) {
     if (!(Ctx -> Dr7 & (1ULL << (i * 2))))
       return i;
@@ -119,7 +119,7 @@ DWORD FunStuff::EatHook::FindFreeDrIndex(PCONTEXT Ctx) {
   return (DWORD) - 1;
 }
 
-BOOL FunStuff::EatHook::SetHardwareBreakpoint(PVOID Address, DWORD DrIndex) {
+BOOL FunStuff::IatHook::SetHardwareBreakpoint(PVOID Address, DWORD DrIndex) {
   HANDLE Thread = GetCurrentThread();
   CONTEXT Ctx = {
     0
@@ -153,7 +153,7 @@ BOOL FunStuff::EatHook::SetHardwareBreakpoint(PVOID Address, DWORD DrIndex) {
   return SetThreadContext(Thread, & Ctx);
 }
 
-BOOL FunStuff::EatHook::RemoveHardwareBreakpoint(DWORD DrIndex) {
+BOOL FunStuff::IatHook::RemoveHardwareBreakpoint(DWORD DrIndex) {
   HANDLE Thread = GetCurrentThread();
   CONTEXT Ctx = {
     0
@@ -185,7 +185,7 @@ BOOL FunStuff::EatHook::RemoveHardwareBreakpoint(DWORD DrIndex) {
   return SetThreadContext(Thread, & Ctx);
 }
 
-LONG CALLBACK FunStuff::EatHook::VectoredHandler(PEXCEPTION_POINTERS Info) {
+LONG CALLBACK FunStuff::IatHook::VectoredHandler(PEXCEPTION_POINTERS Info) {
   if (Info -> ExceptionRecord -> ExceptionCode != EXCEPTION_SINGLE_STEP)
     return EXCEPTION_CONTINUE_SEARCH;
 
@@ -202,7 +202,7 @@ LONG CALLBACK FunStuff::EatHook::VectoredHandler(PEXCEPTION_POINTERS Info) {
   return EXCEPTION_CONTINUE_SEARCH;
 }
 
-BOOL FunStuff::EatHook::Install(LPCSTR Module, LPCSTR Proc, PVOID HookFunc, PVOID * OutOriginal) {
+BOOL FunStuff::IatHook::Install(LPCSTR Module, LPCSTR Proc, PVOID HookFunc, PVOID * OutOriginal) {
   PeImage Pe = ParsePeImage(NULL);
   DWORD_PTR Base = (DWORD_PTR) Pe.ImageBase;
   auto ImportDescriptor = Pe.ImportDescriptor;
@@ -259,7 +259,7 @@ BOOL FunStuff::EatHook::Install(LPCSTR Module, LPCSTR Proc, PVOID HookFunc, PVOI
   return FALSE;
 }
 
-BOOL FunStuff::EatHook::Remove() {
+BOOL FunStuff::IatHook::Remove() {
   if (!State.IsActive)
     return FALSE;
 
@@ -271,7 +271,7 @@ BOOL FunStuff::EatHook::Remove() {
 }
 
 template < typename Ret, typename...Args >
-  Ret FunStuff::EatHook::CallOriginal(Args...args) {
+  Ret FunStuff::IatHook::CallOriginal(Args...args) {
     RemoveHardwareBreakpoint(State.DrIndex);
     typedef Ret( * FuncType)(Args...);
     Ret Result = ((FuncType) State.OriginalFunction)(args...);
@@ -283,7 +283,7 @@ typedef int(WINAPI * MessageBoxA_t)(HWND, LPCSTR, LPCSTR, UINT);
 
 int WINAPI HookedMessageBoxA(_In_opt_ HWND hWnd, _In_opt_ LPCSTR lpText, _In_opt_ LPCSTR lpCaption, _In_ UINT uType) {
   printf( "[*] MessageBoxA hooked via VEH!\n" );
-  auto Result = FunStuff::EatHook::CallOriginal < int > (hWnd, "Hooked via VEH!", lpCaption, uType);
+  auto Result = FunStuff::IatHook::CallOriginal < int > (hWnd, "Hooked via VEH!", lpCaption, uType);
   return Result;
 }
 
@@ -298,7 +298,7 @@ int main() {
   PVOID OriginalFunc = nullptr;
 
   printf( "[*] Installing MessageBoxA IAT hook...\n" );
-  if (!FunStuff::EatHook::Install("user32.dll", "MessageBoxA", HookedMessageBoxA, & OriginalFunc)) {
+  if (!FunStuff::IatHook::Install("user32.dll", "MessageBoxA", HookedMessageBoxA, & OriginalFunc)) {
     printf("[-] Failed to hook MessageBoxA\n");
     return -1;
   }
@@ -310,7 +310,7 @@ int main() {
   printf( "\n[*] Press any key to unhook...\n" );
   getchar( );
 
-  if ( FunStuff::EatHook::Remove( ) )
+  if ( FunStuff::IatHook::Remove( ) )
     printf( "[+] IAT hook removed!\n" );
 
   return 0;
