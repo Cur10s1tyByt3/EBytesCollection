@@ -1,6 +1,6 @@
 # DLL Proxy Generator
 
-This tool generates proxy DLL export forwarding code by walking the Export Address Table (EAT) of a target DLL and emitting linker pragmas for every named export. Took me about 2 hours to get the path handling and forwarder logic right.
+This tool generates proxy DLL export forwarding code by walking the Export Address Table (EAT) of a target DLL and emitting linker pragmas for every named export.
 
 ## What It Does
 
