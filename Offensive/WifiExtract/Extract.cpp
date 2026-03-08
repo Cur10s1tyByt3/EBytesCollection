@@ -83,7 +83,7 @@ GetWifiDataWithPasswords(
 
             //
             // WLAN_PROFILE_GET_PLAINTEXT_KEY (0x4) requests the password
-            // in plaintext inside the XML blob — requires elevation.
+            // in plaintext inside the XML blob
             //
             if (WlanGetProfile(
                 WlanHandle,
