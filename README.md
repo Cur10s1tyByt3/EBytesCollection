@@ -9,6 +9,8 @@ I want to hand over some knowledge before i leave :) !
 - get clr internal functions ( Credits; C5Hackr )
 - crypto stuff ( bcrypt , dpapi etc )
 - custom getprocaddr/handle (use NtCurrentTeb )
+- customgetprocaddr/handle with hashing
+- idk more ? let me think in peace 🙏
 - 
 # DO NOT ADD:
 - ANTIVM , ANTIDEBUG. only common ones
