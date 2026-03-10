@@ -50,7 +50,7 @@ If you just run `main()`, the sample already does the full round trip and frees 
 
 # Why ? 
 > Many people asked me, Evilbytecode why do u reinvent the wheel ?
-- Its beacuse i want to make it atleast something unique, if u have skill u can make it into a header easily, and also to teach people, this repository is dedicated to offensive/general dev, that means if someone decides to use this they also should have it reliable and no random crashes, or debugging some weird ass codes lol. i have to frick with this bs so u dont have to :) ... and no im not recoding this all , like almost all of those codes are my old projects which i just like copy and modify and put here :)
+- Its beacuse i want to make it atleast something unique, if u have skill u can make it into a header easily, and also to teach people, this repository is dedicated to offensive/general dev, that means if someone decides to use this they also should have it reliable and no random crashes, or debugging some weird ass codes lol. i have to frick with this bs so u dont have to :) ... and no im not recoding this all , like almost all of those codes are my old projects which i just like copy and modify and put here :) , and also like there people who have issues with their own code and if they cant figure it out this is their safe space to see how its done right haha 
 ## What You Should Add
 
 Right now this is still a single-file demo. Split it into a header and source file, expose a small public API.
