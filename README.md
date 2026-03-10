@@ -7,8 +7,7 @@ I want to hand over some knowledge before i leave :) !
 - wmi done by @evilbytecode ✅
 - simple antidbg (documentated) ❌
 - get clr internal functions ( Credits; C5Hackr ) ❌
-- crypto stuff ( bcrypt , dpapi etc ) ❌
-- BCRYPT WIP   ❌
+- crypto stuff ( bcrypt , dpapi etc ) ✅
 - custom getprocaddr/handle (use NtCurrentTeb ) ❌
 - customgetprocaddr/handle with hashing ❌ 
 - idk more ? let me think in peace 🙏
