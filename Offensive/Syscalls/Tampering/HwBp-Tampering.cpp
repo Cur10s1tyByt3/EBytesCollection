@@ -595,7 +595,7 @@ ExceptionHandler(
 }
 
 //
-// NTDLL function pointer types for POC.
+// NTDLL function pointer types for POC, if u need more of these, feel free to define them manualyl lol... these are just for PoC
 //
 typedef LONG NTSTATUS;
 
