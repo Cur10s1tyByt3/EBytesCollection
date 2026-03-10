@@ -1,7 +1,7 @@
 # FunStuff
 I want to hand over some knowledge before i leave :) !
 - todo for myself;
-- add toy debugger ( dll loads etc ) ❌ 
+- add toy debugger ( dll loads etc )  ✅
 - amsi/etw patch classic ❌ 
 - some proc hollowing ❌ 
 - wmi done by @evilbytecode ✅
