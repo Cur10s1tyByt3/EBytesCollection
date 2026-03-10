@@ -12,6 +12,7 @@ I want to hand over some knowledge before i leave :) !
 - customgetprocaddr/handle with hashing
 - idk more ? let me think in peace 🙏
 - perhaps a clr hoster
+- execution in memory runpe, loadpe, etc
 # DO NOT ADD:
 - ANTIVM , ANTIDEBUG. only common ones
 - specific av bypasses (AVOID DMCA), or reversing some other content. 
