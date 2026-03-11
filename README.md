@@ -3,7 +3,7 @@
 A personal collection of source code focused on **Windows internals**, **general security research**, and **offensive tooling**. Topics range from PE structure parsing and process enumeration to hooking techniques and syscall tampering.
 
 > These are older projects shared as-is. Code quality and documentation may vary.
-
+> https://t.me/ebytelabs
 ---
 
 ## Table of Contents
