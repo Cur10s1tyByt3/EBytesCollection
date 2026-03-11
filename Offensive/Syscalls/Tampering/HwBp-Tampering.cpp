@@ -325,12 +325,6 @@ SetFunctionArgument(
             break;
     }
 
-    //
-    // Win64:
-    // [rsp+0x00] = return address
-    // [rsp+0x08..0x27] = shadow space
-    // argument 5 starts at [rsp+0x28]
-    //
     *reinterpret_cast<PULONG_PTR>(
         ThreadCtx->Rsp + (ParameterIndex * sizeof(PVOID))
         ) = Value;
